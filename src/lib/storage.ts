@@ -2,6 +2,7 @@ import { ChatHistory, ChatMessage } from '../types/chat';
 
 const STORAGE_KEY = 'chat_history';
 const CONTEXT_KEY = 'chat_context';
+const MAX_STORED_MESSAGES = 100;
 const MAX_CONTEXT_MESSAGES = 10;
 
 export const chatStorage = {
@@ -11,13 +12,15 @@ export const chatStorage = {
   
   loadChat: (): ChatHistory => {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : [];
+    if (!saved) return [];
+    const messages = JSON.parse(saved);
+    return messages.slice(-MAX_STORED_MESSAGES);
   },
   
   addMessage: (message: ChatMessage) => {
     const history = chatStorage.loadChat();
-    history.push(message);
-    chatStorage.saveChat(history);
+    const newHistory = [...history, message].slice(-MAX_STORED_MESSAGES);
+    chatStorage.saveChat(newHistory);
   },
   
   clearChat: () => {

@@ -4,7 +4,6 @@ import { getChatCompletion, updateApiKey } from './lib/groq';
 import { chatStorage } from './lib/storage';
 import type { ChatHistory, ChatMessage } from './types/chat';
 import { ChatMessageItem } from './components/ChatMessage';
-import { debounce } from './lib/utils';
 
 function App() {
   const [messages, setMessages] = useState<ChatHistory>([]);
@@ -69,26 +68,16 @@ function App() {
     setMessages([]);
   };
 
-  const debouncedSetInput = useMemo(
-    () => debounce((value: string) => setInput(value), 100),
-    []
-  );
-
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    debouncedSetInput(e.target.value);
-  }, [debouncedSetInput]);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading || !hasApiKey) return;
 
     const currentInput = input;
-    setInput(''); // Reset input immediately
-    if (inputRef.current) {
-      inputRef.current.value = ''; // Reset the input field value
-      // Pre-focus the input
-      inputRef.current.focus();
-    }
+    setInput('');
 
     const userMessage: ChatMessage = {
       role: 'user',
@@ -97,11 +86,14 @@ function App() {
     };
 
     setIsLoading(true);
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => {
+      // Keep only the last 100 messages in state
+      const newMessages = [...prev, userMessage].slice(-100);
+      return newMessages;
+    });
     chatStorage.addMessage(userMessage);
 
     try {
-      // Get context for AI
       const context = chatStorage.getContext();
       const response = await getChatCompletion(userMessage.content, context);
       
@@ -111,10 +103,13 @@ function App() {
         timestamp: Date.now()
       };
       
-      // Update context and messages
       const newContext = [...context, userMessage, assistantMessage];
       chatStorage.saveContext(newContext);
-      setMessages(prev => [...prev, assistantMessage]);
+      
+      setMessages(prev => {
+        const newMessages = [...prev, assistantMessage].slice(-100);
+        return newMessages;
+      });
       chatStorage.addMessage(assistantMessage);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Sorry, I encountered an error. Please try again.";
@@ -133,6 +128,9 @@ function App() {
       }
     } finally {
       setIsLoading(false);
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     }
   }, [input, isLoading, hasApiKey]);
 
@@ -147,7 +145,9 @@ function App() {
   }, [messages, scrollToBottom]);
 
   const renderMessages = useMemo(() => {
-    return messages.map((message, index) => (
+    // Only render the last 50 messages for performance
+    const visibleMessages = messages.slice(-50);
+    return visibleMessages.map((message, index) => (
       <ChatMessageItem
         key={`${message.timestamp}-${index}`}
         message={message}
