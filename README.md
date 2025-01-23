@@ -23,7 +23,7 @@ A modern chat interface powered by Groq's AI models, built with React and TypeSc
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/groq-chat.git
+git clone https://github.com/awmie/GroqChat.git
 cd groq-chat
 ```
 
