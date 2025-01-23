@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { SendHorizontal, Bot, Loader2, Sun, Moon, Key, Trash2 } from 'lucide-react';
+import { SendHorizontal, Bot, Loader2, Sun, Moon, Key, Trash2, Github } from 'lucide-react';
 import { getChatCompletion, updateApiKey } from './lib/groq';
-import { MarkdownMessage } from './components/MarkdownMessage';
 import { chatStorage } from './lib/storage';
 import type { ChatHistory, ChatMessage } from './types/chat';
 import { ChatMessageItem } from './components/ChatMessage';
@@ -162,9 +161,20 @@ function App() {
       <header className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 transition-colors duration-200">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Bot className="w-6 h-6 text-primary-light dark:text-primary-dark" />
-              <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Groq Chat</h1>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Bot className="w-6 h-6 text-primary-light dark:text-primary-dark" />
+                <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">GroqChat</h1>
+              </div>
+              <a
+                href="https://github.com/awmie/GroqChat.git"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
+              >
+                <Github className="w-5 h-5" />
+                <span className="text-sm hidden sm:inline">GitHub</span>
+              </a>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -182,7 +192,7 @@ function App() {
                 className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 relative group"
                 aria-label="Set API Key"
               >
-                <Key className={`w-5 h-5 ${hasApiKey ? 'text-green-500' : 'text-gray-800 dark:text-gray-100'}`} />
+                <Key className={`w-5 h-5 ${hasApiKey ? 'text-green-500 dark:text-green-500' : 'text-gray-800 dark:text-gray-100'}`} />
                 <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   {hasApiKey ? 'API Key Set' : 'Set API Key'}
                 </span>
@@ -253,11 +263,11 @@ function App() {
             ref={inputRef}
             type="text"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={handleInputChange}
             placeholder={hasApiKey ? "Type your message..." : "Please set your API key first"}
             className="flex-1 rounded-lg border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark transition-colors duration-200"
             disabled={isLoading || !hasApiKey}
-            autoFocus // Add autoFocus prop
+            autoFocus
           />
           <button
             type="submit"
