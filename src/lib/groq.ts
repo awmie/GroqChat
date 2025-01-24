@@ -1,6 +1,6 @@
 import Groq from "groq-sdk";
 import type { ChatHistory } from "../types/chat";
-import { systemPrompts } from "./prompts";
+import { config } from "../config";
 
 let groqClient: Groq | null = null;
 
@@ -17,9 +17,9 @@ export async function getChatCompletion(message: string, context: ChatHistory = 
   }
 
   try {
-    const systemMessage = systemPrompts.thinkingProcess || "Think step by step";
+    // Add fallback for system prompt
     const messages = [
-      { role: "system", content: systemMessage },
+      { role: "system", content: config.COT_PROMPT },
       ...context.map(msg => ({ role: msg.role, content: msg.content })),
       { role: "user", content: message }
     ];
