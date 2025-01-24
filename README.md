@@ -19,7 +19,7 @@ A modern chat interface powered by Groq's AI model - Llama-3.3-70b-versatile, bu
 - 🔒 Secure API key management
 - ⌨️ Markdown support in responses
 - 📱 Responsive design
-
+- ⚙️ Uses Enhanced Chain of Thought (currently doing research on that) to process prompts
 ## Getting Started
 
 ### Prerequisites
