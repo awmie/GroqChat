@@ -1,6 +1,14 @@
 # GroqChat
 
-A modern chat interface powered by Groq's AI models, built with React and TypeScript.
+A modern chat interface powered by Groq's AI model - Llama-3.3-70b-versatile, built with React and TypeScript.
+
+## what's new?
+
+![Screenshot 2025-01-24 195632](https://github.com/user-attachments/assets/334999ca-6657-4b91-b382-2e3e40225f1f)
+
+![Screenshot 2025-01-24 195040](https://github.com/user-attachments/assets/3ed08d32-fa33-4492-80b1-217f2f3aa966)
+
+
 
 ## Features
 
@@ -11,7 +19,7 @@ A modern chat interface powered by Groq's AI models, built with React and TypeSc
 - 🔒 Secure API key management
 - ⌨️ Markdown support in responses
 - 📱 Responsive design
-
+- ⚙️ Uses Enhanced Chain of Thought (currently doing research on that) to process prompts
 ## Getting Started
 
 ### Prerequisites
