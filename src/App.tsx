@@ -170,90 +170,100 @@ function App() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
         <header className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 transition-colors duration-200 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-3">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center justify-between sm:justify-start">
-            <div className="flex items-center space-x-4">
-            <div className="flex items-center gap-2">
-              <Bot className="w-6 h-6 text-primary-light dark:text-primary-dark" />
-              <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">GroqChat</h1>
-            </div>
-            <a
+          <div className="max-w-4xl mx-auto px-1 py-2 sm:px-4 sm:py-3">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between w-full">
+            {/* Logo section - reduced size for mobile */}
+            <div className="flex items-center gap-1 sm:gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
+              <Bot className="w-4 h-4 sm:w-6 sm:h-6 text-primary-light dark:text-primary-dark" />
+              <h1 className="text-sm sm:text-xl font-semibold text-gray-800 dark:text-gray-100">GroqChat</h1>
+              </div>
+              <a
               href="https://github.com/awmie/GroqChat.git"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
-            >
-              <Github className="w-5 h-5" />
-              <span className="text-sm hidden sm:inline">GitHub</span>
-            </a>
-            </div>
-          </div>
-          <div className="flex items-center justify-between sm:justify-end gap-3">
-              <ModelSelector />
-              <COTToggle />
-              <button
-              onClick={handleClearMemory}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 relative group"
-              aria-label="Clear Memory"
+              className="flex items-center gap-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
               >
-                <Trash2 className="w-5 h-5 text-gray-800 dark:text-gray-100" />
-                <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  Clear Memory
-                </span>
+              <Github className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-sm hidden sm:inline">GitHub</span>
+              </a>
+            </div>
+
+            {/* Controls section - further reduced spacing */}
+            <div className="flex items-center gap-1 sm:gap-3">
+              <div className="w-[80px] sm:w-auto">
+              <ModelSelector />
+              </div>
+              <div className="mx-1 sm:mx-2">
+              <COTToggle />
+              </div>
+              <div className="flex items-center gap-1 sm:gap-2">
+              <button
+                onClick={handleClearMemory}
+                className="p-1 sm:p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                aria-label="Clear Memory"
+              >
+                <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 text-gray-800 dark:text-gray-100" />
               </button>
               <button
                 onClick={() => setShowApiInput(!showApiInput)}
-                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 relative group"
+                className="p-1 sm:p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
                 aria-label="Set API Key"
               >
-                <Key className={`w-5 h-5 ${hasApiKey ? 'text-green-500 dark:text-green-500' : 'text-gray-800 dark:text-gray-100'}`} />
-                <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  {hasApiKey ? 'API Key Set' : 'Set API Key'}
-                </span>
+                <Key className={`w-4 h-4 sm:w-5 sm:h-5 ${hasApiKey ? 'text-green-500 dark:text-green-500' : 'text-gray-800 dark:text-gray-100'}`} />
               </button>
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 relative group"
+                className="p-1 sm:p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
                 aria-label="Toggle theme"
               >
                 {isDark ? (
-                  <Sun className="w-5 h-5 text-gray-100" />
+                <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-gray-100" />
                 ) : (
-                  <Moon className="w-5 h-5 text-gray-800" />
+                <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-800" />
                 )}
-                <span className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-700 text-white px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  Toggle theme
-                </span>
               </button>
+              </div>
             </div>
-          </div>
-          {showApiInput && (
-            <form onSubmit={handleApiKeySubmit} className="mt-4 flex gap-2">
+            </div>
+
+            {/* API Key input - adjusted for mobile */}
+            {showApiInput && (
+            <form onSubmit={handleApiKeySubmit} className="flex gap-1 sm:gap-2 mt-2">
               <input
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Enter your Groq API key"
-                className="flex-1 rounded-lg border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark transition-colors duration-200"
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="Enter your Groq API key"
+              className="flex-1 rounded-lg border dark:border-gray-700 bg-white dark:bg-gray-800 
+                   text-gray-800 dark:text-gray-100 px-2 py-1.5 sm:px-4 sm:py-2 
+                   text-sm sm:text-base focus:outline-none focus:ring-2 
+                   focus:ring-primary-light dark:focus:ring-primary-dark"
               />
               <button
-                type="submit"
-                className="bg-primary-light dark:bg-primary-dark text-white rounded-lg px-4 py-2 hover:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200"
+              type="submit"
+              className="whitespace-nowrap bg-primary-light dark:bg-primary-dark text-white 
+                   rounded-lg px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base
+                   hover:bg-blue-500 dark:hover:bg-blue-600"
               >
-                Save
+              Save
               </button>
             </form>
-          )}
-        </div>
+            )}
+          </div>
+          </div>
         </header>
 
+
         <main className="flex-1 w-full">
-          <div className="max-w-4xl mx-auto p-4 flex flex-col h-[calc(100vh-80px)]">
-            <div 
-              ref={chatContainerRef}
-              className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 p-4 mb-4 overflow-y-auto transition-colors duration-200 scroll-smooth"
-            >
+          <div className="max-w-4xl mx-auto p-2 sm:p-4 flex flex-col h-[calc(100vh-120px)] sm:h-[calc(100vh-80px)]">
+          <div 
+          ref={chatContainerRef}
+          className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 
+                p-2 sm:p-4 mb-2 sm:mb-4 overflow-y-auto transition-colors duration-200 scroll-smooth
+                min-h-[200px] sm:min-h-[400px]"
+          >
               {!hasApiKey && messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-400">
                   <Key className="w-12 h-12 mb-4" />
@@ -274,24 +284,30 @@ function App() {
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex gap-2">
+            <form onSubmit={handleSubmit} className="flex gap-2 mb-2 sm:mb-4 sticky bottom-0">
               <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={handleInputChange}
-                placeholder={hasApiKey ? "Type your message..." : "Please set your API key first"}
-                className="flex-1 rounded-lg border dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark transition-colors duration-200"
-                disabled={isLoading || !hasApiKey}
-                autoFocus
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={handleInputChange}
+              placeholder={hasApiKey ? "Type your message..." : "Please set your API key first"}
+              className="flex-1 rounded-lg border dark:border-gray-700 bg-white dark:bg-gray-800 
+                   text-gray-800 dark:text-gray-100 px-3 py-2 sm:py-2.5
+                   text-sm focus:outline-none focus:ring-2 
+                   focus:ring-primary-light dark:focus:ring-primary-dark transition-colors duration-200"
+              disabled={isLoading || !hasApiKey}
+              autoFocus
               />
               <button
-                type="submit"
-                disabled={isLoading || !input.trim() || !hasApiKey}
-                className="bg-primary-light dark:bg-primary-dark text-white rounded-lg px-4 py-2 hover:bg-blue-500 dark:hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors duration-200"
+              type="submit"
+              disabled={isLoading || !input.trim() || !hasApiKey}
+              className="bg-primary-light dark:bg-primary-dark text-white rounded-lg 
+                   px-3 py-2 sm:py-2.5 hover:bg-blue-500 dark:hover:bg-blue-600 
+                   disabled:opacity-50 disabled:cursor-not-allowed 
+                   flex items-center gap-1 sm:gap-2 transition-colors duration-200"
               >
-                <SendHorizontal className="w-4 h-4" />
-                Send
+              <SendHorizontal className="w-4 h-4" />
+              <span className="text-sm">Send</span>
               </button>
             </form>
           </div>
