@@ -1,4 +1,3 @@
-import React, { memo } from 'react';
 import { MarkdownMessage } from './MarkdownMessage';
 import type { ChatMessage } from '../types/chat';
 
@@ -7,7 +6,8 @@ interface ChatMessageProps {
   isDark: boolean;
 }
 
-export const ChatMessageItem = memo(({ message, isDark }: ChatMessageProps) => {
+export function ChatMessageItem({ message, isDark }: ChatMessageProps) {
+
   return (
     <div
       className={`flex ${message.role === 'assistant' ? 'justify-start' : 'justify-end'}`}
@@ -27,6 +27,5 @@ export const ChatMessageItem = memo(({ message, isDark }: ChatMessageProps) => {
       </div>
     </div>
   );
-});
+}
 
-ChatMessageItem.displayName = 'ChatMessageItem';

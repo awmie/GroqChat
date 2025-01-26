@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Copy, Check } from 'lucide-react';
+import { oneDark, oneLight } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import type { Components } from 'react-markdown/lib/ast-to-react';
+
 
 interface MarkdownMessageProps {
   content: string;
@@ -12,55 +11,31 @@ interface MarkdownMessageProps {
 }
 
 export function MarkdownMessage({ content, isDark }: MarkdownMessageProps) {
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
-
-  const handleCopyCode = async (code: string) => {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopiedCode(code);
-      setTimeout(() => setCopiedCode(null), 2000);
-    } catch (err) {
-      console.error('Failed to copy code:', err);
-    }
-  };
-
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        code({ node, inline, className, children, ...props }) {
-          const match = /language-(\w+)/.exec(className || '');
-          const code = String(children).replace(/\n$/, '');
+        code({ inline, className, children, ...props }: Components['code']) {
 
-          return !inline && match ? (
-            <div className="relative group">
-              <button
-                onClick={() => handleCopyCode(code)}
-                className="absolute right-2 top-2 p-2 rounded-lg bg-gray-700/50 hover:bg-gray-700/75 text-gray-200 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                title="Copy code"
-              >
-                {copiedCode === code ? (
-                  <Check className="w-4 h-4" />
-                ) : (
-                  <Copy className="w-4 h-4" />
-                )}
-              </button>
+          const match = /language-(\w+)/.exec(className || '');
+          const language = match ? match[1] : '';
+          
+          if (!inline && language) {
+            return (
               <SyntaxHighlighter
                 style={isDark ? oneDark : oneLight}
-                language={match[1]}
+                language={language}
                 PreTag="div"
-                className="rounded-md !my-4"
+                customStyle={{ margin: 0 }}
                 {...props}
               >
-                {code}
+                {String(children).replace(/\n$/, '')}
               </SyntaxHighlighter>
-            </div>
-          ) : (
-            <code className={`${className} bg-gray-200 dark:bg-gray-600 px-1 py-0.5 rounded`} {...props}>
-              {children}
-            </code>
-          );
+            );
+          }
+          return <code className={`${className} bg-gray-200 dark:bg-gray-600 px-1 py-0.5 rounded`} {...props}>{children}</code>;
         },
+
         // Style other markdown elements
         p: ({ children }) => <p className="mb-4 last:mb-0">{children}</p>,
         h1: ({ children }) => <h1 className="text-2xl font-bold mb-4">{children}</h1>,
