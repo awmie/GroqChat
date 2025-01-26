@@ -24,12 +24,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
         contextWindow: 8192,
         displayName: "Llama 3.1 8B"
     },
-    {
-        id: "llama-guard-3-8b",
-        provider: "Meta",
-        contextWindow: 8192,
-        displayName: "Llama Guard 3 8B"
-    },
+    // {
+    //     id: "llama-guard-3-8b",
+    //     provider: "Meta",
+    //     contextWindow: 8192,
+    //     displayName: "Llama Guard 3 8B"
+    // },
     {
         id: "llama3-70b-8192",
         provider: "Meta",
