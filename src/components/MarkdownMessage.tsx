@@ -2,12 +2,17 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark, oneLight } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import type { Components } from 'react-markdown/lib/ast-to-react';
-
 
 interface MarkdownMessageProps {
   content: string;
   isDark: boolean;
+}
+
+interface CodeProps {
+  node?: any;
+  inline?: boolean;
+  className?: string;
+  children?: React.ReactNode;
 }
 
 export function MarkdownMessage({ content, isDark }: MarkdownMessageProps) {
@@ -15,15 +20,14 @@ export function MarkdownMessage({ content, isDark }: MarkdownMessageProps) {
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        code({ inline, className, children, ...props }: Components['code']) {
-
+        code: ({ inline, className, children, ...props }: CodeProps) => {
           const match = /language-(\w+)/.exec(className || '');
           const language = match ? match[1] : '';
           
           if (!inline && language) {
             return (
               <SyntaxHighlighter
-                style={isDark ? oneDark : oneLight}
+                style={isDark ? oneDark : oneLight as any}
                 language={language}
                 PreTag="div"
                 customStyle={{ margin: 0 }}
