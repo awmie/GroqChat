@@ -1,8 +1,10 @@
 import Groq from "groq-sdk";
 import type { ChatHistory } from "../types/chat";
-import { config } from "../config";
+import { config, type GroqModel } from "../config";
 
 let groqClient: Groq | null = null;
+let selectedModel: GroqModel = config.DEFAULT_MODEL;
+let useCOT: boolean = false;
 
 export function updateApiKey(newApiKey: string) {
   groqClient = new Groq({
@@ -11,22 +13,35 @@ export function updateApiKey(newApiKey: string) {
   });
 }
 
+export function setModel(model: GroqModel) {
+  selectedModel = model;
+}
+
+export function toggleCOT(enabled: boolean) {
+  useCOT = enabled;
+}
+
 export async function getChatCompletion(message: string, context: ChatHistory = []) {
   if (!groqClient) {
     throw new Error("Please set your Groq API key first");
   }
 
   try {
-    // Add fallback for system prompt
+    const systemMessage = useCOT ? config.SYSTEM_MESSAGES.cot : config.SYSTEM_MESSAGES.default;
+    
     const messages = [
-      { role: "system", content: config.COT_PROMPT },
-      ...context.map(msg => ({ role: msg.role, content: msg.content })),
-      { role: "user", content: message }
+      { role: "system" as const, content: systemMessage || "You are a helpful assistant." },
+      ...context.map(msg => ({ 
+        role: msg.role as "user" | "assistant", 
+        content: msg.content || "" 
+      })),
+      { role: "user" as const, content: message }
     ];
 
     const chatCompletion = await groqClient.chat.completions.create({
       messages,
-      model: "llama-3.3-70b-versatile",
+      model: selectedModel,
+      temperature: 0.7,
     });
 
     return chatCompletion.choices[0]?.message?.content || "";
@@ -35,3 +50,5 @@ export async function getChatCompletion(message: string, context: ChatHistory = 
     throw error;
   }
 }
+
+

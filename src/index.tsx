@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { SendHorizontal, Bot, Loader2, Sun, Moon, Key, Trash2, Github } from 'lucide-react';
+import { getChatCompletion, updateApiKey } from './lib/groq';
 import { ModelSelector } from './components/ModelSelector';
 import { COTToggle } from './components/COTToggle';
-import { getChatCompletion, updateApiKey } from './lib/groq';
-
+import './index.css';
 
 import { chatStorage } from './lib/storage';
 import type { ChatHistory, ChatMessage } from './types/chat';
@@ -18,9 +19,7 @@ function App() {
   const [hasApiKey, setHasApiKey] = useState(false);
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme');
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-      return savedTheme === 'dark';
+      return document.documentElement.classList.contains('dark');
     }
     return false;
   });
@@ -40,10 +39,9 @@ function App() {
     const savedMessages = chatStorage.loadChat();
     setMessages(savedMessages);
     
-    // Check if API key exists in localStorage and set it
-    const savedApiKey = localStorage.getItem('groq_api_key');
-    if (savedApiKey) {
-      updateApiKey(savedApiKey);
+    // Check if API key exists in localStorage
+    const apiKeyExists = localStorage.getItem('groq_api_key');
+    if (apiKeyExists) {
       setHasApiKey(true);
       setShowApiInput(false);
     }
@@ -57,16 +55,13 @@ function App() {
   }, [isLoading]);
 
   const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+    setIsDark(!isDark);
   };
 
   const handleApiKeySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (apiKey.trim()) {
       updateApiKey(apiKey.trim());
-      localStorage.setItem('groq_api_key', apiKey.trim()); // Save API key to localStorage
       setShowApiInput(false);
       setHasApiKey(true);
       setApiKey('');
@@ -91,9 +86,9 @@ function App() {
 
     const userMessage: ChatMessage = {
       role: 'user',
-      content: currentInput.trim()
+      content: currentInput.trim(),
+      timestamp: Date.now()
     };
-
 
     setIsLoading(true);
     setMessages(prev => {
@@ -107,11 +102,11 @@ function App() {
       const context = chatStorage.getContext();
       const response = await getChatCompletion(userMessage.content, context);
       
-        const assistantMessage: ChatMessage = {
+      const assistantMessage: ChatMessage = {
         role: 'assistant',
-        content: response
-        };
-
+        content: response,
+        timestamp: Date.now()
+      };
       
       const newContext = [...context, userMessage, assistantMessage];
       chatStorage.saveContext(newContext);
@@ -123,20 +118,19 @@ function App() {
       chatStorage.addMessage(assistantMessage);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Sorry, I encountered an error. Please try again.";
-        const errorChatMessage: ChatMessage = {
+      const errorChatMessage: ChatMessage = {
         role: 'assistant',
-        content: errorMessage
-        };
-
+        content: errorMessage,
+        timestamp: Date.now()
+      };
       
       setMessages(prev => [...prev, errorChatMessage]);
       chatStorage.addMessage(errorChatMessage);
       
-        if (errorMessage.includes("Please set your Groq API key")) {
+      if (errorMessage.includes("Please set your Groq API key")) {
         setShowApiInput(true);
         setHasApiKey(false);
-        localStorage.removeItem('groq_api_key'); // Clear stored API key on error
-        }
+      }
     } finally {
       setIsLoading(false);
       if (inputRef.current) {
@@ -159,11 +153,11 @@ function App() {
     // Only render the last 50 messages for performance
     const visibleMessages = messages.slice(-50);
     return visibleMessages.map((message, index) => (
-        <ChatMessageItem
-        key={index}
+      <ChatMessageItem
+        key={`${message.timestamp}-${index}`}
         message={message}
         isDark={isDark}
-        />
+      />
     ));
   }, [messages, isDark]);
 

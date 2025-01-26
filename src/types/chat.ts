@@ -1,7 +1,9 @@
+export type Role = "system" | "user" | "assistant";
+
 export interface ChatMessage {
-  role: 'user' | 'assistant';
+  role: Role;
   content: string;
-  timestamp: number;
 }
 
 export type ChatHistory = ChatMessage[];
+

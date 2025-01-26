@@ -1,3 +1,94 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --primary-light: #2563eb;
+  --primary-dark: #3b82f6;
+}
+
+/* Add styles for the model selector and COT toggle */
+select, input[type="checkbox"] {
+	@apply cursor-pointer;
+}
+
+.chat-container::-webkit-scrollbar {
+	width: 6px;
+}
+
+.chat-container::-webkit-scrollbar-track {
+	@apply bg-gray-100;
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+	@apply bg-gray-400 rounded;
+}
+
+.text-primary-light {
+  color: var(--primary-light);
+}
+
+.text-primary-dark {
+  color: var(--primary-dark);
+}
+
+.bg-primary-light {
+  background-color: var(--primary-light);
+}
+
+.bg-primary-dark {
+  background-color: var(--primary-dark);
+}
+
+/* Markdown Styles */
+.markdown {
+  @apply text-current;
+}
+
+.markdown pre {
+  @apply my-2 rounded-lg overflow-x-auto;
+}
+
+.markdown pre div {
+  @apply rounded-lg;
+}
+
+.markdown code {
+  @apply bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded;
+}
+
+.markdown pre code {
+  @apply bg-transparent p-0;
+}
+
+.markdown p {
+  @apply my-2;
+}
+
+.markdown ul {
+  @apply list-disc list-inside my-2;
+}
+
+.markdown ol {
+  @apply list-decimal list-inside my-2;
+}
+
+.markdown li {
+  @apply my-1;
+}
+
+.markdown blockquote {
+  @apply border-l-4 border-gray-300 dark:border-gray-600 pl-4 my-2 italic;
+}
+
+.markdown h1 {
+  @apply text-2xl font-bold my-4;
+}
+
+.markdown h2 {
+  @apply text-xl font-bold my-3;
+}
+
+.markdown h3 {
+  @apply text-lg font-bold my-2;
+}

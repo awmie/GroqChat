@@ -5,12 +5,31 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          light: '#60A5FA',
-          dark: '#3B82F6'
-        }
-      }
+        'primary-light': 'var(--primary-light)',
+        'primary-dark': 'var(--primary-dark)',
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: 'none',
+            code: {
+              backgroundColor: '#1f2937',
+              padding: '0.2em 0.4em',
+              borderRadius: '0.25rem',
+              fontWeight: '400',
+            },
+            'code::before': {
+              content: 'none',
+            },
+            'code::after': {
+              content: 'none',
+            },
+          },
+        },
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 };
