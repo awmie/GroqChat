@@ -96,11 +96,8 @@ function App() {
 
 
     setIsLoading(true);
-    setMessages(prev => {
-      // Keep only the last 100 messages in state
-      const newMessages = [...prev, userMessage].slice(-100);
-      return newMessages;
-    });
+    setMessages(prev => [...prev, userMessage].slice(-100));
+
     chatStorage.addMessage(userMessage);
 
     try {
@@ -116,10 +113,8 @@ function App() {
       const newContext = [...context, userMessage, assistantMessage];
       chatStorage.saveContext(newContext);
       
-      setMessages(prev => {
-        const newMessages = [...prev, assistantMessage].slice(-100);
-        return newMessages;
-      });
+        setMessages(prev => [...prev, assistantMessage].slice(-100));
+
       chatStorage.addMessage(assistantMessage);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Sorry, I encountered an error. Please try again.";
@@ -187,7 +182,7 @@ function App() {
           content: response
         };
         
-        setMessages(prev => [...previousMessages, editedMessage, assistantMessage]);
+        setMessages([...previousMessages, editedMessage, assistantMessage]);
         chatStorage.saveContext([...previousMessages, editedMessage, assistantMessage]);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Sorry, I encountered an error. Please try again.";
@@ -196,7 +191,7 @@ function App() {
           content: errorMessage
         };
         
-        setMessages(prev => [...previousMessages, editedMessage, errorChatMessage]);
+        setMessages([...previousMessages, editedMessage, errorChatMessage]);
       } finally {
         setIsLoading(false);
       }
