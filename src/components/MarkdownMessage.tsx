@@ -2,43 +2,79 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark, oneLight } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { Copy, Check } from 'lucide-react';
+import { useState } from 'react';
 
 interface MarkdownMessageProps {
   content: string;
   isDark: boolean;
 }
 
-interface CodeProps {
-  node?: any;
-  inline?: boolean;
-  className?: string;
+interface CodeBlockProps {
   children?: React.ReactNode;
+  className?: string;
+  inline?: boolean;
 }
 
+const CodeBlock = ({ children, className, inline, isDark, copiedCode, onCopy }: CodeBlockProps & { isDark: boolean; copiedCode: string | null; onCopy: (code: string) => void }) => {
+  const match = /language-(\w+)/.exec(className || '');
+  const language = match ? match[1] : '';
+  const code = String(children || '').replace(/\n$/, '');
+
+  if (!inline && language) {
+    return (
+      <div className="relative group">
+        <button
+          onClick={() => onCopy(code)}
+          className="absolute right-2 top-2 p-2 rounded-lg bg-gray-800/30 hover:bg-gray-800/50 
+                   opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          aria-label="Copy code"
+        >
+          {copiedCode === code ? (
+            <Check className="w-4 h-4 text-green-400" />
+          ) : (
+            <Copy className="w-4 h-4 text-gray-400" />
+          )}
+        </button>
+        <SyntaxHighlighter
+          style={isDark ? oneDark : oneLight}
+          language={language}
+          PreTag="div"
+          customStyle={{ margin: 0 }}
+        >
+          {code}
+        </SyntaxHighlighter>
+      </div>
+    );
+  }
+  return (
+    <code className={`${className} bg-gray-200 dark:bg-gray-600 px-1 py-0.5 rounded`}>
+      {children}
+    </code>
+  );
+};
+
 export function MarkdownMessage({ content, isDark }: MarkdownMessageProps) {
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  const handleCopyCode = async (code: string) => {
+    await navigator.clipboard.writeText(code);
+    setCopiedCode(code);
+    setTimeout(() => setCopiedCode(null), 2000);
+  };
+
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        code: ({ inline, className, children, ...props }: CodeProps) => {
-          const match = /language-(\w+)/.exec(className || '');
-          const language = match ? match[1] : '';
-          
-          if (!inline && language) {
-            return (
-              <SyntaxHighlighter
-                style={isDark ? oneDark : oneLight as any}
-                language={language}
-                PreTag="div"
-                customStyle={{ margin: 0 }}
-                {...props}
-              >
-                {String(children).replace(/\n$/, '')}
-              </SyntaxHighlighter>
-            );
-          }
-          return <code className={`${className} bg-gray-200 dark:bg-gray-600 px-1 py-0.5 rounded`} {...props}>{children}</code>;
-        },
+        code: (props) => (
+          <CodeBlock
+            {...props}
+            isDark={isDark}
+            copiedCode={copiedCode}
+            onCopy={handleCopyCode}
+          />
+        ),
 
         // Style other markdown elements
         p: ({ children }) => <p className="mb-4 last:mb-0">{children}</p>,

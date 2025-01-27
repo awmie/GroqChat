@@ -155,6 +155,54 @@ function App() {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
+  const handleEditMessage = useCallback(async (oldMessage: ChatMessage, newContent: string) => {
+    // Find the index of the message being edited
+    const messageIndex = messages.findIndex(m => 
+      m.role === oldMessage.role && m.content === oldMessage.content
+    );
+
+    if (messageIndex === -1) return;
+
+    // Create new message with edited content
+    const editedMessage = {
+      ...oldMessage,
+      content: newContent
+    };
+
+    // Get all messages up to the edited message
+    const previousMessages = messages.slice(0, messageIndex);
+    
+    // Update messages state with edited message
+    setMessages([...previousMessages, editedMessage]);
+    
+    // If it's a user message, get new AI response
+    if (oldMessage.role === 'user') {
+      setIsLoading(true);
+      try {
+        const context = previousMessages;
+        const response = await getChatCompletion(newContent, context);
+        
+        const assistantMessage: ChatMessage = {
+          role: 'assistant',
+          content: response
+        };
+        
+        setMessages(prev => [...previousMessages, editedMessage, assistantMessage]);
+        chatStorage.saveContext([...previousMessages, editedMessage, assistantMessage]);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Sorry, I encountered an error. Please try again.";
+        const errorChatMessage: ChatMessage = {
+          role: 'assistant',
+          content: errorMessage
+        };
+        
+        setMessages(prev => [...previousMessages, editedMessage, errorChatMessage]);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  }, [messages]);
+
   const renderMessages = useMemo(() => {
     // Only render the last 50 messages for performance
     const visibleMessages = messages.slice(-50);
@@ -163,9 +211,10 @@ function App() {
         key={index}
         message={message}
         isDark={isDark}
+        onEdit={handleEditMessage}
         />
     ));
-  }, [messages, isDark]);
+  }, [messages, isDark, handleEditMessage]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
