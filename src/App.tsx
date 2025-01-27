@@ -18,9 +18,12 @@ function App() {
   const [hasApiKey, setHasApiKey] = useState(false);
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
+      // Check system preference first
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const savedTheme = localStorage.getItem('theme');
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-      return savedTheme === 'dark';
+      const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+      return theme === 'dark';
     }
     return false;
   });
@@ -28,12 +31,17 @@ function App() {
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (!localStorage.getItem('theme')) {
+        setIsDark(e.matches);
+        document.documentElement.classList.toggle('dark', e.matches);
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   useEffect(() => {
     // Load saved messages on component mount
@@ -56,11 +64,12 @@ function App() {
     }
   }, [isLoading]);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     const newTheme = !isDark;
     setIsDark(newTheme);
+    document.documentElement.classList.toggle('dark', newTheme);
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
-  };
+  }, [isDark]);
 
   const handleApiKeySubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -212,8 +221,9 @@ function App() {
   }, [messages, isDark, handleEditMessage]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-        <header className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 transition-colors duration-200 sticky top-0 z-10">
+    <div className="flex flex-col min-h-screen bg-gray-50/50 dark:bg-gray-900 transition-colors duration-200">
+      <header className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 
+            transition-colors duration-200 sticky top-0 z-10">
           <div className="max-w-4xl mx-auto px-1 py-2 sm:px-4 sm:py-3">
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between w-full">
@@ -245,27 +255,27 @@ function App() {
               <div className="flex items-center gap-1 sm:gap-2">
               <button
                 onClick={handleClearMemory}
-                className="p-1 sm:p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                className="p-1 sm:p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-theme"
                 aria-label="Clear Memory"
-              >
-                <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 text-gray-800 dark:text-gray-100" />
-              </button>
-              <button
+                >
+                <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 text-gray-800 dark:text-gray-100 transition-text" />
+                </button>
+                <button
                 onClick={() => setShowApiInput(!showApiInput)}
-                className="p-1 sm:p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                className="p-1 sm:p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-theme"
                 aria-label="Set API Key"
-              >
-                <Key className={`w-4 h-4 sm:w-5 sm:h-5 ${hasApiKey ? 'text-green-500 dark:text-green-500' : 'text-gray-800 dark:text-gray-100'}`} />
-              </button>
-              <button
+                >
+                <Key className={`w-4 h-4 sm:w-5 sm:h-5 ${hasApiKey ? 'text-green-500' : 'text-gray-800 dark:text-gray-100'} transition-text`} />
+                </button>
+                <button
                 onClick={toggleTheme}
-                className="p-1 sm:p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                className="p-1 sm:p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-theme"
                 aria-label="Toggle theme"
-              >
+                >
                 {isDark ? (
-                <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-gray-100" />
+                <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-gray-100 transition-text" />
                 ) : (
-                <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-800" />
+                <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-800 transition-text" />
                 )}
               </button>
               </div>
@@ -301,13 +311,14 @@ function App() {
 
 
         <main className="flex-1 w-full">
-          <div className="max-w-4xl mx-auto p-2 sm:p-4 flex flex-col h-[calc(100vh-120px)] sm:h-[calc(100vh-80px)]">
-          <div 
-          ref={chatContainerRef}
-          className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 
-                p-2 sm:p-4 mb-2 sm:mb-4 overflow-y-auto transition-colors duration-200 scroll-smooth
-                min-h-[200px] sm:min-h-[400px]"
-          >
+            <div className="max-w-4xl mx-auto p-4 flex flex-col h-[calc(100vh-80px)]">
+            <div 
+            ref={chatContainerRef}
+            className="flex-1 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl 
+                shadow-lg border border-gray-200/50 dark:border-gray-700/50 
+                p-4 mb-4 overflow-y-auto transition-all duration-200 scroll-smooth"
+            >
+
               {!hasApiKey && messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-400">
                   <Key className="w-12 h-12 mb-4" />
@@ -328,30 +339,32 @@ function App() {
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex gap-2 mb-2 sm:mb-4 sticky bottom-0">
+            <form onSubmit={handleSubmit} className="flex gap-3">
               <input
               ref={inputRef}
               type="text"
               value={input}
               onChange={handleInputChange}
               placeholder={hasApiKey ? "Type your message..." : "Please set your API key first"}
-              className="flex-1 rounded-lg border dark:border-gray-700 bg-white dark:bg-gray-800 
-                   text-gray-800 dark:text-gray-100 px-3 py-2 sm:py-2.5
-                   text-sm focus:outline-none focus:ring-2 
-                   focus:ring-primary-light dark:focus:ring-primary-dark transition-colors duration-200"
+                className="flex-1 rounded-xl border border-gray-200/50 dark:border-gray-700/50 
+                   bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm
+                   text-gray-800 dark:text-gray-100 px-4 py-3 
+                   focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-500/10 
+                   shadow-sm hover:shadow-md transition-all duration-200"
               disabled={isLoading || !hasApiKey}
               autoFocus
               />
               <button
               type="submit"
               disabled={isLoading || !input.trim() || !hasApiKey}
-              className="bg-primary-light dark:bg-primary-dark text-white rounded-lg 
-                   px-3 py-2 sm:py-2.5 hover:bg-blue-500 dark:hover:bg-blue-600 
-                   disabled:opacity-50 disabled:cursor-not-allowed 
-                   flex items-center gap-1 sm:gap-2 transition-colors duration-200"
+                className="bg-blue-500 dark:bg-blue-500 text-white rounded-xl px-6 py-3 
+                   hover:bg-blue-600 dark:hover:bg-blue-600 disabled:opacity-50 
+                   disabled:cursor-not-allowed flex items-center gap-2 
+                   shadow-sm hover:shadow-md transition-all duration-200
+                   hover:translate-y-[-1px] active:translate-y-[1px]"
               >
-              <SendHorizontal className="w-4 h-4" />
-              <span className="text-sm">Send</span>
+              <SendHorizontal className="w-5 h-5" />
+              <span>Send</span>
               </button>
             </form>
           </div>

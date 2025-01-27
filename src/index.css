@@ -2,27 +2,95 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
-  --primary-light: #2563eb;
-  --primary-dark: #3b82f6;
+  --primary-light: #3b82f6;
+  --primary-dark: #60a5fa;
 }
 
-/* Add styles for the model selector and COT toggle */
-select, input[type="checkbox"] {
-	@apply cursor-pointer;
+/* Modern transitions */
+* {
+  @apply transition-colors duration-200;
 }
 
-.chat-container::-webkit-scrollbar {
-	width: 6px;
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
-.chat-container::-webkit-scrollbar-track {
-	@apply bg-gray-100;
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
 }
 
-.chat-container::-webkit-scrollbar-thumb {
-	@apply bg-gray-400 rounded;
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-200 dark:bg-gray-700 rounded-full;
 }
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-300 dark:bg-gray-600;
+}
+
+/* Button hover effects */
+button {
+  @apply transition-all duration-200;
+}
+
+button:not(:disabled):hover {
+  @apply transform scale-[1.02];
+}
+
+button:not(:disabled):active {
+  @apply transform scale-[0.98];
+}
+
+/* Input focus effects */
+input, textarea {
+  @apply transition-all duration-200;
+}
+
+input:focus, textarea:focus {
+  @apply ring-2 ring-blue-500/20 dark:ring-blue-500/10;
+}
+
+/* Glass morphism effects */
+.glass-light {
+  @apply bg-white/70 backdrop-blur-lg;
+}
+
+.glass-dark {
+  @apply bg-gray-800/70 backdrop-blur-lg;
+}
+
+/* Dark mode overrides */
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  @apply bg-gray-900 text-gray-100;
+}
+
+/* Message animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-new {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
 
 .text-primary-light {
   color: var(--primary-light);
