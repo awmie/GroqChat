@@ -319,13 +319,21 @@ function App() {
                 p-4 mb-4 overflow-y-auto transition-all duration-200 scroll-smooth"
             >
 
-              {!hasApiKey && messages.length === 0 && (
+                {!hasApiKey && messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-400">
                   <Key className="w-12 h-12 mb-4" />
                   <p className="text-lg mb-2">Welcome to Groq Chat!</p>
-                  <p>Please set your Groq API key to start chatting.</p>
+                  <p className="mb-2">Please set your Groq API key to start chatting.</p>
+                  <a
+                  href="https://console.groq.com/keys"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline"
+                  >
+                  Get your API key here
+                  </a>
                 </div>
-              )}
+                )}
               <div className="space-y-4">
                 {renderMessages}
                 {isLoading && (
