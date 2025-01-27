@@ -1,6 +1,6 @@
 # GroqChat
 
-A modern chat interface powered by Groq's AI model - Llama-3.3-70b-versatile, built with React and TypeScript.
+A modern chat interface powered by Groq's AI models with **Chain of Thought Processing**, built with React and TypeScript.
 
 ## what's new?
 #### Without Chain of Thought
@@ -43,8 +43,6 @@ npm install
 ```bash
 npm run dev
 ```
-
-4. Open http://localhost:5173 in your browser
 
 ### Usage
 
