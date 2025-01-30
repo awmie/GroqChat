@@ -31,6 +31,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     //     displayName: "Llama Guard 3 8B"
     // },
     {
+        id: "deepseek-r1-distill-llama-70b",
+        provider: "DeepSeek",
+        contextWindow: 32768,
+        displayName: "DeepSeek-R1"
+    },
+    {
         id: "llama3-70b-8192",
         provider: "Meta",
         contextWindow: 8192,
@@ -63,6 +69,6 @@ export const config = {
     DEFAULT_MODEL: "llama-3.3-70b-versatile" as GroqModel,
     SYSTEM_MESSAGES: {
         default: "You are a helpful assistant.",
-        cot: import.meta.env.VITE_COT_PROMPT || "You are a helpful assistant that thinks step by step."
+        cot: import.meta.env.VITE_COT_PROMPT
     }
 };
