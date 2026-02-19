@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -32,6 +32,9 @@ jobs:
         run: npm run build
         env:
           VITE_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          
+      - name: Verify build
+        run: ls -la dist
           
       - name: Deploy to GitHub Pages
         id: deployment
