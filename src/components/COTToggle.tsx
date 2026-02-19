@@ -1,13 +1,22 @@
 import { useState } from 'react';
-import { toggleCOT } from '../lib/groq';
+import { toggleCOT as toggleGroqCOT } from '../lib/groq';
+import { toggleCOT as toggleLocalCOT } from '../lib/local';
 
-export function COTToggle() {
+interface COTToggleProps {
+  provider: 'groq' | 'local';
+}
+
+export function COTToggle({ provider }: COTToggleProps) {
 	const [enabled, setEnabled] = useState(false);
 
 	const handleClick = () => {
 		const newState = !enabled;
 		setEnabled(newState);
-		toggleCOT(newState);
+		if (provider === 'groq') {
+			toggleGroqCOT(newState);
+		} else {
+			toggleLocalCOT(newState);
+		}
 	};
 
 	return (
