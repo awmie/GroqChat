@@ -5,12 +5,28 @@ import { config, type GroqModel } from "../config";
 let groqClient: Groq | null = null;
 let selectedModel: GroqModel = config.DEFAULT_MODEL;
 let useCOT: boolean = false;
+let hasEmbeddedKey = false;
+
+const embeddedApiKey = import.meta.env.VITE_GROQ_API_KEY;
+
+if (embeddedApiKey) {
+  hasEmbeddedKey = true;
+  groqClient = new Groq({
+    apiKey: embeddedApiKey,
+    dangerouslyAllowBrowser: true
+  });
+}
+
+export function isEmbeddedMode(): boolean {
+  return hasEmbeddedKey;
+}
 
 export function updateApiKey(newApiKey: string) {
   groqClient = new Groq({
     apiKey: newApiKey,
     dangerouslyAllowBrowser: true
   });
+  hasEmbeddedKey = false;
 }
 
 export function setModel(model: GroqModel) {

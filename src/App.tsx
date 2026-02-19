@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { SendHorizontal, Bot, Loader2, Sun, Moon, Key, Trash2, Github } from 'lucide-react';
 import { ModelSelector } from './components/ModelSelector';
 import { COTToggle } from './components/COTToggle';
-import { getChatCompletion, updateApiKey } from './lib/groq';
+import { getChatCompletion, updateApiKey, isEmbeddedMode } from './lib/groq';
 
 
 import { chatStorage } from './lib/storage';
@@ -47,6 +47,13 @@ function App() {
     // Load saved messages on component mount
     const savedMessages = chatStorage.loadChat();
     setMessages(savedMessages);
+    
+    // Check for embedded API key first
+    if (isEmbeddedMode()) {
+      setHasApiKey(true);
+      setShowApiInput(false);
+      return;
+    }
     
     // Check if API key exists in localStorage and set it
     const savedApiKey = localStorage.getItem('groq_api_key');
@@ -136,7 +143,7 @@ function App() {
       setMessages(prev => [...prev, errorChatMessage]);
       chatStorage.addMessage(errorChatMessage);
       
-        if (errorMessage.includes("Please set your Groq API key")) {
+        if (errorMessage.includes("Please set your Groq API key") && !isEmbeddedMode()) {
         setShowApiInput(true);
         setHasApiKey(false);
         localStorage.removeItem('groq_api_key'); // Clear stored API key on error
