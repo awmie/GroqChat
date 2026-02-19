@@ -30,8 +30,6 @@ jobs:
         
       - name: Build
         run: npm run build
-        env:
-          VITE_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           
       - name: Verify build
         run: ls -la dist
