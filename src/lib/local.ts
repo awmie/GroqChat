@@ -8,6 +8,12 @@ let modelLoading: boolean = false;
 
 export const LOCAL_MODELS = [
   {
+    id: "qwen2.5-0.5b-instruct",
+    displayName: "Qwen 2.5 0.5B",
+    size: "~500MB",
+    description: "Smallest, fastest"
+  },
+  {
     id: "llama-3.2-1b-instruct",
     displayName: "Llama 3.2 1B",
     size: "~1GB",

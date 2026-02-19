@@ -12,7 +12,7 @@ function App() {
   const [messages, setMessages] = useState<ChatHistory>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [localModel, setLocalModel] = useState('llama-3.2-1b-instruct');
+  const [localModel, setLocalModel] = useState('qwen2.5-0.5b-instruct');
   const [webGPUSupported, setWebGPUSupported] = useState<boolean | null>(null);
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
