@@ -1,41 +1,38 @@
-import { BrowserAI } from "@browserai/browserai";
+import { MLCEngine, CreateMLCEngine, type InitProgressReport, type ChatCompletionMessageParam } from "@mlc-ai/web-llm";
 import type { ChatHistory } from "../types/chat";
 
-let browserAI: BrowserAI | null = null;
+let engine: MLCEngine | null = null;
 let useCOT: boolean = false;
 let modelLoaded: boolean = false;
 let modelLoading: boolean = false;
+let progressCallback: ((progress: string) => void) | null = null;
 
 export const LOCAL_MODELS = [
   {
-    id: "qwen2.5-0.5b-instruct",
-    displayName: "Qwen 2.5 0.5B",
-    size: "~500MB",
-    description: "Smallest, fastest"
+    id: "Phi-3.5-mini-instruct-q4f32_1-MLC",
+    displayName: "Phi 3.5 Mini",
+    size: "~700MB",
+    description: "⚡ Fastest, great quality"
   },
   {
-    id: "llama-3.2-1b-instruct",
+    id: "Qwen2-0.5B-Instruct-q4f32_1-MLC",
+    displayName: "Qwen 2 0.5B",
+    size: "~500MB",
+    description: "⚡ Super small, fastest"
+  },
+  {
+    id: "Llama-3.2-1B-Instruct-q4f32_1-MLC",
     displayName: "Llama 3.2 1B",
     size: "~1GB",
-    description: "Fast, works on most devices"
+    description: "Best quality"
   },
   {
-    id: "qwen2.5-1.5b-instruct",
-    displayName: "Qwen 2.5 1.5B",
-    size: "~1.5GB",
-    description: "Good quality, balanced"
-  },
-  {
-    id: "smollm-3b-instruct",
-    displayName: "SmolLM 3B",
-    size: "~3GB",
-    description: "Best quality, needs powerful GPU"
+    id: "gemma-2b-it-q4f32_1-mlc",
+    displayName: "Gemma 2B",
+    size: "~800MB",
+    description: "Good balance"
   }
 ] as const;
-
-export function isLocalMode(): boolean {
-  return true;
-}
 
 export function isModelLoaded(): boolean {
   return modelLoaded;
@@ -45,22 +42,38 @@ export function isLoading(): boolean {
   return modelLoading;
 }
 
-export async function loadModel(modelId: string): Promise<void> {
+export async function loadModel(
+  modelId: string,
+  onProgress?: (progress: string) => void
+): Promise<void> {
   if (modelLoading) {
     throw new Error("Model is already loading");
+  }
+  
+  if (onProgress) {
+    progressCallback = onProgress;
   }
   
   modelLoading = true;
   
   try {
-    browserAI = new BrowserAI();
-    await browserAI.loadModel(modelId);
+    engine = await CreateMLCEngine(
+      modelId,
+      {
+        initProgressCallback: (report: InitProgressReport) => {
+          if (progressCallback) {
+            progressCallback(report.text);
+          }
+        }
+      }
+    );
     modelLoaded = true;
   } catch (error) {
     modelLoaded = false;
     throw error;
   } finally {
     modelLoading = false;
+    progressCallback = null;
   }
 }
 
@@ -73,7 +86,7 @@ export function toggleCOT(enabled: boolean): void {
 }
 
 export async function getChatCompletion(message: string, context: ChatHistory = []): Promise<string> {
-  if (!browserAI || !modelLoaded) {
+  if (!engine || !modelLoaded) {
     throw new Error("Please load a model first");
   }
 
@@ -82,24 +95,24 @@ export async function getChatCompletion(message: string, context: ChatHistory = 
       ? "You are a helpful assistant. Please think step by step and explain your reasoning."
       : "You are a helpful assistant.";
 
-    const conversationHistory = context.map(msg => ({
-      role: msg.role,
-      content: msg.content
-    }));
+    const messages: ChatCompletionMessageParam[] = [
+      { role: "system", content: systemMessage },
+      ...context.map(msg => ({
+        role: msg.role as "user" | "assistant",
+        content: msg.content
+      })),
+      { role: "user", content: message }
+    ];
 
-    const response = await browserAI.generateText(
-      message,
-      {
-        systemPrompt: systemMessage,
-        history: conversationHistory,
-        temperature: 0.7,
-        maxTokens: 1024
-      }
-    );
+    const response = await engine.chat.completions.create({
+      messages,
+      temperature: 0.7,
+      max_tokens: 1024
+    });
 
-    return String(response);
+    return response.choices[0]?.message?.content || "";
   } catch (error) {
-    console.error("Error getting local completion:", error);
+    console.error("Error getting completion:", error);
     throw error;
   }
 }
@@ -117,7 +130,8 @@ export async function checkWebGPU(): Promise<boolean> {
 }
 
 export function unloadModel(): void {
-  if (browserAI && modelLoaded) {
+  if (engine && modelLoaded) {
     modelLoaded = false;
+    engine = null;
   }
 }

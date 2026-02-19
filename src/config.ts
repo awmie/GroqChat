@@ -7,28 +7,28 @@ export interface LocalModelInfo {
 
 export const AVAILABLE_LOCAL_MODELS: LocalModelInfo[] = [
     {
-        id: "qwen2.5-0.5b-instruct",
-        displayName: "Qwen 2.5 0.5B",
-        size: "~500MB",
-        description: "Smallest, fastest, works on most devices"
+        id: "Phi-3.5-mini-instruct-q4f32_1-MLC",
+        displayName: "Phi 3.5 Mini",
+        size: "~700MB",
+        description: "⚡ Fastest, great quality"
     },
     {
-        id: "llama-3.2-1b-instruct",
+        id: "Qwen2-0.5B-Instruct-q4f32_1-MLC",
+        displayName: "Qwen 2 0.5B",
+        size: "~500MB",
+        description: "⚡ Super small, fastest"
+    },
+    {
+        id: "Llama-3.2-1B-Instruct-q4f32_1-MLC",
         displayName: "Llama 3.2 1B",
         size: "~1GB",
-        description: "Fast, works on most devices"
+        description: "Best quality"
     },
     {
-        id: "qwen2.5-1.5b-instruct",
-        displayName: "Qwen 2.5 1.5B",
-        size: "~1.5GB",
-        description: "Good quality, balanced"
-    },
-    {
-        id: "smollm-3b-instruct",
-        displayName: "SmolLM 3B",
-        size: "~3GB",
-        description: "Best quality, needs powerful GPU"
+        id: "gemma-2b-it-q4f32_1-mlc",
+        displayName: "Gemma 2B",
+        size: "~800MB",
+        description: "Good balance"
     }
 ];
 

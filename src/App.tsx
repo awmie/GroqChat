@@ -12,7 +12,8 @@ function App() {
   const [messages, setMessages] = useState<ChatHistory>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [localModel, setLocalModel] = useState('qwen2.5-0.5b-instruct');
+  const [localModel, setLocalModel] = useState('Phi-3.5-mini-instruct-q4f32_1-MLC');
+  const [loadProgress, setLoadProgress] = useState<string>('');
   const [webGPUSupported, setWebGPUSupported] = useState<boolean | null>(null);
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -69,11 +70,16 @@ function App() {
   const handleLoadLocalModel = async () => {
     try {
       setIsLoading(true);
-      await loadModel(localModel);
+      setLoadProgress('Starting...');
+      await loadModel(localModel, (progress) => {
+        setLoadProgress(progress);
+      });
     } catch (error) {
       console.error("Failed to load model:", error);
+      setLoadProgress('Failed to load model');
     } finally {
       setIsLoading(false);
+      setTimeout(() => setLoadProgress(''), 2000);
     }
   };
 
@@ -216,6 +222,7 @@ function App() {
                   selectedModel={localModel}
                   onModelChange={handleLocalModelChange}
                   onLoadModel={handleLoadLocalModel}
+                  progress={loadProgress}
                 />
                 <div className="mx-1 sm:mx-2">
                   <COTToggle />
