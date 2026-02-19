@@ -57,10 +57,13 @@ export async function loadModel(
   modelLoading = true;
   
   try {
+    console.log("Loading model:", modelId);
+    
     engine = await CreateMLCEngine(
       modelId,
       {
         initProgressCallback: (report: InitProgressReport) => {
+          console.log("Progress:", report.text);
           if (progressCallback) {
             progressCallback(report.text);
           }
@@ -68,8 +71,13 @@ export async function loadModel(
       }
     );
     modelLoaded = true;
+    console.log("Model loaded successfully!");
   } catch (error) {
+    console.error("Error loading model:", error);
     modelLoaded = false;
+    if (error instanceof Error) {
+      throw new Error(`Failed to load model: ${error.message}`);
+    }
     throw error;
   } finally {
     modelLoading = false;

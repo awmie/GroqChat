@@ -71,15 +71,29 @@ function App() {
     try {
       setIsLoading(true);
       setLoadProgress('Starting...');
+      
+      // Check WebGPU first
+      const hasWebGPU = await checkWebGPU();
+      if (!hasWebGPU) {
+        setLoadProgress('WebGPU not supported! Use Chrome/Edge');
+        return;
+      }
+      
       await loadModel(localModel, (progress) => {
         setLoadProgress(progress);
       });
     } catch (error) {
       console.error("Failed to load model:", error);
-      setLoadProgress('Failed to load model');
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      setLoadProgress(`Error: ${errorMsg}`);
     } finally {
       setIsLoading(false);
-      setTimeout(() => setLoadProgress(''), 2000);
+      setTimeout(() => {
+        if (isModelLoaded()) {
+          setLoadProgress('Ready!');
+          setTimeout(() => setLoadProgress(''), 2000);
+        }
+      }, 1000);
     }
   };
 
